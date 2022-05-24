@@ -22,12 +22,16 @@ function App() {
       setLocation('');
     }
   };
-
+  const handleClick = () => {
+    setData({});
+    setLocation('');
+  }
 
 
   return (
     <div className="app">
       <div className="search">
+        <h2>Weather Now</h2>
         <input
           value={location}
           onChange={(e) => setLocation(e.target.value)}
@@ -35,6 +39,7 @@ function App() {
           placeholder='Enter Location'
           type="text" />
       </div>
+        {data.name && <button onClick={() => handleClick()}>Clear</button>}
       <div className="container">
         <div className="top">
           <div className="location">
@@ -44,9 +49,9 @@ function App() {
             {data.main ? <h1>{data.main.temp.toFixed()}°F</h1> : null}
           </div>
         </div>
-          <div className="description">
-            {data.weather ? <p className='bold'>{data.weather[0].main}</p> : null}
-          </div>
+        <div className="description">
+          {data.weather ? <p className='bold'>{data.weather[0].main}</p> : null}
+        </div>
         {data.name &&
           <div className="bottom">
             <div className="feels">
