@@ -1,15 +1,36 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 
 function App() {
   const [data, setData] = useState({});
-  const [location, setLocation] = useState('');
+  const [city, setCity] = useState('');
 
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}
   &units=metric&appid=5bc2b4f40acfffa046713955a4370d52`
 
-  let searchLocation = (e) => {
+
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      console.log(position.coords);
+      const Api_endpoint = `https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&appid=5bc2b4f40acfffa046713955a4370d52`
+
+      axios.get(Api_endpoint)
+        .then((response) => {
+          console.log('res', response.data);
+          setData(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+    });
+
+
+  }, []);
+
+
+  let searchcity = (e) => {
     if (e.key === 'Enter') {
       axios.get(url)
         .then(function (response) {
@@ -19,12 +40,12 @@ function App() {
         .catch(function (error) {
           console.log(error);
         })
-      setLocation('');
+      setCity('');
     }
   };
   const handleClick = () => {
     setData({});
-    setLocation('');
+    setCity('');
   }
 
 
@@ -33,16 +54,16 @@ function App() {
       <div className="search">
         <h2>Weather Now</h2>
         <input
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          onKeyPress={searchLocation}
-          placeholder='Enter Location'
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          onKeyPress={searchcity}
+          placeholder='Enter location'
           type="text" />
       </div>
-        {data.name && <button onClick={() => handleClick()}>Clear</button>}
+      {data.name && <button onClick={() => handleClick()}>Clear</button>}
       <div className="container">
         <div className="top">
-          <div className="location">
+          <div className="city">
             <p>{data.name}</p>
           </div>
           <div className="temp">
