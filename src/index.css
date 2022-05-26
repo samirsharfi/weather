@@ -7,7 +7,6 @@
 body {
   font-family: "Outfit", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
     "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  
   margin: 0;
   padding: 0;
   background: url("./assets/sunset.jpg") no-repeat center center/cover;
@@ -19,26 +18,25 @@ p {
 h1 {
   font-size: 120px;
 }
-h2{
+h2 {
   padding-bottom: 30px;
   font-size: 50px;
 }
-button{
+button {
   position: absolute;
   padding: 12px 30px;
   font-size: 20px;
   border-radius: 25px;
   border: 1px solid rgba(255, 255, 255, 0.8);
   background: rgba(255, 255, 255, 0.1);
-  color: #f8f8f8 ;
+  color: #f8f8f8;
   cursor: pointer;
 }
-button:hover{
+button:hover {
   color: rgb(0, 0, 0, 0.4);
-  background: rgb(248, 248, 248,0.3);
-  -webkit-transition: .5s;
-  transition: .5s;
-
+  background: rgb(248, 248, 248, 0.3);
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
 }
 .app {
   display: flex;
@@ -91,4 +89,34 @@ button:hover{
   padding: 20px;
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.2);
+}
+@media (max-width: 1400px) {
+  .app {
+    height: 700px;
+  }
+}
+@media (max-width: 700px) {
+  .app {
+    height: 700px;
+  }
+  .container .top {
+    left: 2%;
+    bottom: 40%;
+  }
+  .container .bottom {
+    width: 580px;
+    margin-bottom: -50px;
+  }
+  button {
+    margin-bottom: -150px;
+  }
+  .container .description {
+    transform: rotate(269deg);
+  }
+}
+@media (max-width: 500px) {
+  .app {
+    height: 700px;
+    width: 100%;
+  }
 }
