@@ -1,9 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import DropDown from "../DropDown";
+import {ReactSpinner} from 'react-spinning-wheel';
+import 'react-spinning-wheel/dist/style.css';
 
 const Container = () => {
   const [data, setData] = useState({});
   const [city, setCity] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [dropDown, setDropDown] = useState(false);
 
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}
   &units=metric&appid=5bc2b4f40acfffa046713955a4370d52`;
@@ -11,13 +16,14 @@ const Container = () => {
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
       console.log(position.coords);
-      const Api_endpoint = `https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&appid=5bc2b4f40acfffa046713955a4370d52`;
+      const ApiEndPoint = `https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&appid=5bc2b4f40acfffa046713955a4370d52`;
 
       axios
-        .get(Api_endpoint)
+        .get(ApiEndPoint)
         .then((response) => {
           console.log("res", response.data);
           setData(response.data);
+          setLoading(false);
         })
         .catch(function (error) {
           console.log(error);
@@ -25,7 +31,7 @@ const Container = () => {
     });
   }, []);
 
-  let searchcity = (e) => {
+  let searchCity = (e) => {
     if (e.key === "Enter") {
       axios
         .get(url)
@@ -37,26 +43,35 @@ const Container = () => {
           console.log(error);
         });
       setCity("");
+     setDropDown(false);
     }
   };
+  const handleChange = (e)=>{
+    setCity(e.target.value);
+    setDropDown(true);
+  };
+
   const handleClick = () => {
     setData({});
     setCity("");
+    setDropDown(false);
   };
 
   return (
     <div className="container">
       <div className="search">
-        <input
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          onKeyPress={searchcity}
-          placeholder="Enter location"
-          type="text"
-        />
-        <div className="btn">
-          {data.name && <button onClick={() => handleClick()}>Clear</button>}
-        </div>
+          <input
+             value={city}
+             onChange={(e)=>handleChange(e)}
+             onKeyPress={searchCity}
+             placeholder="Enter location"
+             type="text"
+             />
+          {dropDown && <DropDown/>}
+           {loading && <ReactSpinner/>}
+         <div className="btn">
+            {data.name && <button onClick={() => handleClick()}>Clear</button>}
+         </div>
       </div>
       <div className="top">
         <div className="city">
