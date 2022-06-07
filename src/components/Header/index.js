@@ -2,8 +2,8 @@
 
 const Header = () => {
   return (
-    <div>
-      <h2 style={{marginTop:'-100px'}}>Weather Now..!</h2>
+    <div className="header">
+      <h2>Weather Now..!</h2>
     </div>
   )
 }

@@ -1,29 +1,23 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import DropDown from "../DropDown";
-import {ReactSpinner} from 'react-spinning-wheel';
-import 'react-spinning-wheel/dist/style.css';
+import location from '../../assets/location.png'
+import moment from "moment";
 
-const Container = () => {
+const Container = (props) => {
   const [data, setData] = useState({});
   const [city, setCity] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [dropDown, setDropDown] = useState(false);
-
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}
-  &units=metric&appid=5bc2b4f40acfffa046713955a4370d52`;
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
       console.log(position.coords);
       const ApiEndPoint = `https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&appid=5bc2b4f40acfffa046713955a4370d52`;
 
-      axios
-        .get(ApiEndPoint)
+      axios.get(ApiEndPoint)
         .then((response) => {
           console.log("res", response.data);
           setData(response.data);
-          setLoading(false);
+          props.spinner(false);
         })
         .catch(function (error) {
           console.log(error);
@@ -31,76 +25,107 @@ const Container = () => {
     });
   }, []);
 
+  let weatherApi = (data) => {
+    const choosenCity = data ? data : city ;
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${choosenCity}
+    &units=metric&appid=5bc2b4f40acfffa046713955a4370d52`;
+
+    axios.get(url)
+      .then(function (response) {
+        console.log(response.data);
+        setData(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    setCity("");
+
+  };
+
   let searchCity = (e) => {
     if (e.key === "Enter") {
-      axios
-        .get(url)
-        .then(function (response) {
-          console.log(response.data);
-          setData(response.data);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      setCity("");
-     setDropDown(false);
+      weatherApi();
     }
   };
-  const handleChange = (e)=>{
+
+  const handleChange = (e) => {
     setCity(e.target.value);
-    setDropDown(true);
+    
   };
 
   const handleClick = () => {
     setData({});
     setCity("");
-    setDropDown(false);
   };
+
+  const matchCity = (data) => {
+    console.log(data);
+    if (data) {
+      setCity(data);
+      console.log(data);
+      weatherApi(data);
+    }
+  };
+
 
   return (
     <div className="container">
       <div className="search">
-          <input
-             value={city}
-             onChange={(e)=>handleChange(e)}
-             onKeyPress={searchCity}
-             placeholder="Enter location"
-             type="text"
-             />
-          {dropDown && <DropDown/>}
-           {loading && <ReactSpinner/>}
-         <div className="btn">
-            {data.name && <button onClick={() => handleClick()}>Clear</button>}
-         </div>
+        <input
+          value={city}
+          onChange={(e) => handleChange(e)}
+          onKeyPress={searchCity}
+          placeholder="Enter location"
+          type="text"
+        />
+        {city && <DropDown listCity={matchCity} city={city} />}
+        <div className="btn">
+          {data.name && <button onClick={() => handleClick()}>Clear</button>}
+        </div>
       </div>
       <div className="top">
-        <div className="city">
-          <p>{data.name}</p>
+        <div className="location">
+          {data.sys ? <> <img  src={location} alt="location"></img> <p>{data.sys.country}</p> </> : null}
+          <div className="city">
+            <p>{data.name}</p>
+          </div>
+          {data.name && <div className="date">
+            {moment().format("LT")} -
+            {moment().format("dddd")} ,
+            {moment().format("MMM Do YY")}
+          </div>}
         </div>
-        <div className="temp">
-          {data.main ? <h1>{data.main.temp.toFixed()}°F</h1> : null}
+        <div className="top-right">
+          <div className="temp">
+          {data.main ? <><h1>{data.main.temp.toFixed()}</h1><p>°C</p></> : null}
+          </div>
+          <div className="description">
+            {data.weather ? <p>{data.weather[0].main}</p> : null}
+          </div>
         </div>
-      </div>
-      <div className="description">
-        {data.weather ? <p className="bold">{data.weather[0].main}</p> : null}
       </div>
       {data.name && (
         <div className="bottom">
           <div className="feels">
             {data.main ? (
-              <p className="bold">{data.main.feels_like.toFixed()}°F</p>
+              <p>{data.main.feels_like.toFixed()}°<span>C</span></p>
             ) : null}
-            <p>Feels Like</p>
+            <p className="bold">Feels Like</p>
           </div>
           <div className="humidity">
-            {data.main ? <p className="bold">{data.main.humidity}%</p> : null}
-            <p>Humidity</p>
+            {data.main ? <p>{data.main.humidity}%</p> : null}
+            <p className="bold">Humidity</p>
           </div>
           <div className="wind">
-            {data.wind ? (
-              <p className="bold">{data.wind.speed.toFixed()} MPH</p>
-            ) : null}
-            <p>Wind Speed</p>
+            {data.wind ?
+              <p>{data.wind.speed.toFixed()} MPH</p>
+              : null}
+            <p className="bold">Wind Speed</p>
+          </div>
+          <div className="pressure">
+            {data.main ? <p>{data.main.pressure} Pa</p> : null}
+            <p className="bold">pressure</p>
           </div>
         </div>
       )}
